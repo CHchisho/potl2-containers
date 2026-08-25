@@ -1,0 +1,31 @@
+services:
+  server:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      MONGODB_URI: mongodb://mongo:27017/notes
+    depends_on:
+      mongo:
+        condition: service_started
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./src
+          target: /usr/src/app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
